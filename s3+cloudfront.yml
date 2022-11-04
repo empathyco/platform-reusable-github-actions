@@ -6,11 +6,9 @@ on:
       aws-account-id:
         description: 'AWS Account ID'
         required: true
-        default: '230584734870'
       node-version:
         description: 'Node version'
         required: true
-        default: '16'
       s3-bucket-name:
         description: 'S3 Bucket Name'
         required: true
@@ -20,9 +18,13 @@ on:
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
+    # These permissions are needed to interact with GitHub's OIDC Token endpoint.
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
 
     - name: Configure AWS credentials from Websites account
       uses: aws-actions/configure-aws-credentials@v1
