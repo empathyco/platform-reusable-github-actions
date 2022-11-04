@@ -1,0 +1,39 @@
+name: 'S3 + CloudFront'
+description: 'Upload to Amazon S3 and invalidate CloudFront distribution'
+inputs:
+  aws-account-id:
+    description: 'AWS Account ID'
+    required: true
+    default: '230584734870'
+  node-version:
+    description: 'Node version'
+    required: true
+    default: '16'
+  s3-bucket-name:
+    description: 'S3 Bucket Name'
+    required: true
+  cloudfront-distribution-id:
+    description: 'CloudFront Distribution ID'
+    required: true
+runs:
+  using: "composite"
+  steps:
+  - name: Checkout
+    uses: actions/checkout@v2
+
+  - name: Configure AWS credentials from Websites account
+    uses: aws-actions/configure-aws-credentials@v1
+    with:
+      role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/GitHub-OIDC
+      aws-region: us-east-1
+
+  - uses: actions/setup-node@v2
+    with:
+      node-version: ${{ inputs.node-version }}
+  - run: npm ci
+  - run: npm run build
+
+  - name: Sync files to the bucket and invalidate CloudFront cache
+    run: |
+      aws s3 sync build s3://${{ inputs.s3-bucket-name }} --delete --cache-control max-age=3600
+      aws cloudfront create-invalidation --distribution-id ${{ inputs.cloudfront-distribution-id }} --paths '/*'
