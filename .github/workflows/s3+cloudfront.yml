@@ -6,15 +6,19 @@ on:
       aws-account-id:
         description: 'AWS Account ID'
         required: true
+        type: string
       node-version:
         description: 'Node version'
         required: true
+        type: string
       s3-bucket-name:
         description: 'S3 Bucket Name'
         required: true
+        type: string
       cloudfront-distribution-id:
         description: 'CloudFront Distribution ID'
         required: true
+        type: string
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
