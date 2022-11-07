@@ -19,6 +19,10 @@ on:
         description: 'CloudFront Distribution ID'
         required: true
         type: string
+      static-files-folder:
+        description: 'Static files folder'
+        required: true
+        type: string
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
@@ -44,5 +48,5 @@ jobs:
 
     - name: Sync files to the bucket and invalidate CloudFront cache
       run: |
-        aws s3 sync build s3://${{ inputs.s3-bucket-name }} --delete --cache-control max-age=3600
+        aws s3 sync ${{ inputs.static-files-folder }} s3://${{ inputs.s3-bucket-name }} --delete --cache-control max-age=3600
         aws cloudfront create-invalidation --distribution-id ${{ inputs.cloudfront-distribution-id }} --paths '/*'
