@@ -7,10 +7,6 @@ on:
         description: 'AWS Account ID'
         required: true
         type: string
-      node-version:
-        description: 'Node version'
-        required: true
-        type: string
       s3-bucket-name:
         description: 'S3 Bucket Name'
         required: true
@@ -31,20 +27,12 @@ jobs:
       id-token: write
       contents: read
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
 
     - name: Configure AWS credentials from Websites account
       uses: aws-actions/configure-aws-credentials@v1
       with:
         role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/GitHub-OIDC
         aws-region: us-east-1
-
-    - uses: actions/setup-node@v2
-      with:
-        node-version: ${{ inputs.node-version }}
-    - run: npm ci
-    - run: npm run build
 
     - name: Sync files to the bucket and invalidate CloudFront cache
       run: |
