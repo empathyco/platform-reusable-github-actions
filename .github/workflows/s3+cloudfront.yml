@@ -19,10 +19,6 @@ on:
         description: 'Static files folder'
         required: true
         type: string
-      artifact-name:
-        description: 'Artifact name'
-        required: true
-        type: string
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
@@ -31,11 +27,6 @@ jobs:
       id-token: write
       contents: read
     steps:
-    - name: Download artifact for static files
-      uses: actions/download-artifact@v3
-      with:
-        name: ${{ inputs.artifact-name }}
-
     - name: Configure AWS credentials from Websites account
       uses: aws-actions/configure-aws-credentials@v1
       with:
