@@ -1,8 +1,0 @@
-on:
-  workflow_call:
-
-jobs:
-  reusable_workflow_job:
-    runs-on: [self-hosted, platform]
-    steps:
-    - uses: actions/checkout@v3

@@ -1,0 +1,45 @@
+on:
+  workflow_call:
+    name: 'K8s diff'
+    description: 'Helm template & kubectl diff for a given chart'
+    inputs:
+      folder:
+        description: 'Helm chart folder'
+        required: true
+        type: string
+      release-name:
+        description: 'Release name'
+        required: true
+        type: string
+jobs:
+  reusable_workflow_job:
+    runs-on: [self-hosted, platform]
+    steps:
+    - uses: actions/checkout@v3
+    - uses: alexellis/setup-arkade@v2
+    - uses: alexellis/arkade-get@master
+      with:
+        kubectl: v1.25.3
+        helm: latest
+    - uses: dorny/paths-filter@v2
+      id: filter
+      with:
+        filters: |
+          folder:
+            - '${{ inputs.folder }}/${{ inputs.release-name }}/**'
+    - name: Helm chart diff
+      if: steps.filter.outputs.folder == 'true'
+      run: |
+        echo "\`\`\`diff" >> diff.txt
+        helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
+        echo "\`\`\`" >> diff.txt
+    - uses: actions/github-script@v5
+      with:
+        script: |
+          const fs = require('fs');
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: fs.readFileSync('diff.txt', 'utf8')
+          })

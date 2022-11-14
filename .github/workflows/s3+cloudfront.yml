@@ -1,7 +1,7 @@
 on:
   workflow_call:
-    # name: 'S3 + CloudFront'
-    # description: 'Upload to Amazon S3 and invalidate CloudFront distribution'
+    name: 'S3 + CloudFront'
+    description: 'Upload to Amazon S3 and invalidate CloudFront distribution'
     inputs:
       node-version:
         description: 'Node.js version'
