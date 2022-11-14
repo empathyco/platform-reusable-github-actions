@@ -12,6 +12,9 @@ on:
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
+    # permissions:
+    #   id-token: write
+    #   contents: read
     steps:
     - uses: actions/checkout@v3
     - uses: alexellis/setup-arkade@v2
@@ -19,6 +22,11 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
+    # - name: Configure AWS credentials from Websites account
+    #   uses: aws-actions/configure-aws-credentials@v1
+    #   with:
+    #     role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/GitHub-OIDC
+    #     aws-region: us-east-1
     - uses: dorny/paths-filter@v2
       id: filter
       with:
@@ -29,7 +37,7 @@ jobs:
       if: steps.filter.outputs.folder == 'true'
       run: |
         echo "\`\`\`diff" >> diff.txt
-        helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
+        helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false --server-side=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
     - uses: actions/github-script@v5
       with:
