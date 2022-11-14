@@ -61,11 +61,12 @@ jobs:
       if: steps.filter.outputs.folder == 'true'
       run: |
         aws eks update-kubeconfig --region eu-west-1 --name ${{ inputs.cluster-name }}
+        kubectl config current-context
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
       run: |
         echo "\`\`\`diff" >> diff.txt
-        helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false --server-side=false -f - 2>&1 >> diff.txt || true
+        helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
