@@ -59,9 +59,10 @@ jobs:
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false --server-side=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
-    - uses: actions/github-script@v5
+    - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
       with:
+        github-token: ${{ secrets.SUPPORT_TOKEN }}
         script: |
           const fs = require('fs');
           github.rest.issues.createComment({
