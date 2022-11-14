@@ -24,9 +24,11 @@ on:
       issue-number:
         description: 'PR number'
         required: true
+        type: string
       repo:
         description: 'Repository name'
         required: true
+        type: string
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
