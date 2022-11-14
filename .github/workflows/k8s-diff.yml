@@ -62,6 +62,8 @@ jobs:
       run: |
         aws sts get-caller-identity
         aws eks update-kubeconfig --region eu-west-1 --name ${{ inputs.cluster-name }}
+        kubectl config view --minify
+        kubectl get svc
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
