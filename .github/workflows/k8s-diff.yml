@@ -63,7 +63,6 @@ jobs:
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
       with:
-        github-token: ${{ secrets.SUPPORT_TOKEN }}
         script: |
           const fs = require('fs');
           github.rest.issues.createComment({
