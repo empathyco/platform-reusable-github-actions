@@ -21,6 +21,12 @@ on:
         description: 'Cluster name'
         required: true
         type: string
+      issue-number:
+        description: 'PR number'
+        required: true
+      repo:
+        description: 'Repository name'
+        required: true
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
@@ -59,15 +65,15 @@ jobs:
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false --server-side=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
-    - uses: actions/github-script@v5
+    - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
       with:
         github-token: ${{ secrets.SUPPORT_TOKEN }}
         script: |
           const fs = require('fs');
           github.rest.issues.createComment({
-            issue_number: context.issue.number,
-            owner: context.repo.owner,
-            repo: context.repo.repo,
+            issue_number: ${{ github.event.inputs.issue-number }}',
+            owner: 'empathyco',
+            repo: ${{ github.event.inputs.repo }}',
             body: fs.readFileSync('diff.txt', 'utf8')
           })
