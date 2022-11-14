@@ -9,12 +9,24 @@ on:
         description: 'Release name'
         required: true
         type: string
+      aws-account-id:
+        description: 'AWS Account ID'
+        required: true
+        type: string
+      role-to-assume:
+        description: 'Role to assume'
+        required: true
+        type: string
+      cluster-name:
+        description: 'Cluster name'
+        required: true
+        type: string
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
-    # permissions:
-    #   id-token: write
-    #   contents: read
+    permissions:
+      id-token: write
+      contents: read
     steps:
     - uses: actions/checkout@v3
     - uses: alexellis/setup-arkade@v2
@@ -22,11 +34,14 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
-    # - name: Configure AWS credentials from Websites account
-    #   uses: aws-actions/configure-aws-credentials@v1
-    #   with:
-    #     role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/GitHub-OIDC
-    #     aws-region: us-east-1
+    - name: Configure AWS credentials from Websites account
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/${{ inputs.role-to-assume }}
+        aws-region: us-east-1
+    - name: Getting EKS kube config
+      run: |
+        aws eks update-kubeconfig --region eu-west-1 --name ${{ inputs.cluster-name }}
     - uses: dorny/paths-filter@v2
       id: filter
       with:
