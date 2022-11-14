@@ -74,8 +74,8 @@ jobs:
         script: |
           const fs = require('fs');
           github.rest.issues.createComment({
-            issue_number: ${{ github.event.inputs.issue-number }}',
+            issue_number: '${{ github.event.inputs.issue-number }}',
             owner: 'empathyco',
-            repo: ${{ github.event.inputs.repo }}',
+            repo: '${{ github.event.inputs.repo }}',
             body: fs.readFileSync('diff.txt', 'utf8')
           })
