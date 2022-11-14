@@ -1,7 +1,5 @@
 on:
   workflow_call:
-    name: 'K8s diff'
-    description: 'Helm template & kubectl diff for a given chart'
     inputs:
       folder:
         description: 'Helm chart folder'
