@@ -1,0 +1,65 @@
+name: eDocs preview for Empathy teams
+on:
+  workflow_dispatch:
+    inputs:
+      teamRepo:
+        description: 'Team to sync with eDocs'
+        required: true
+      branch:
+        description: 'Branch to take the files from'
+        required: true
+      prNum:
+        description: 'PR number'
+        required: true
+      prMessage:
+        description: 'Message for preview comment'
+        required: false
+        default: ''
+env:
+  GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
+  JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
+jobs:
+  build:
+    runs-on: [self-hosted, platform]
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Cloning eDocs repository
+        uses: actions/checkout@v3
+        with:
+          ref: 'main'
+          repository: empathyco/docs-empathy
+          path: docs-empathy
+          token: ${{ secrets.SUPPORT_TOKEN }}
+      - name: Installing dependencies
+        run: cd docs-empathy && npm ci
+      - name: Building project
+        run: |
+          cd docs-empathy
+          CUSTOM_REMOTE='{"repo": "${{ github.event.inputs.teamRepo }}", "branch": "${{ github.event.inputs.branch }}"}' BASE_URL=/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }}/ npm run build
+      - name: Configure AWS credentials from Websites account
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::314198854453:role/GitHub-OIDC
+          aws-region: us-east-1
+      - name: Sync files to the bucket and invalidate CloudFront cache
+        run: |
+          cd docs-empathy
+          aws s3 sync build s3://docs-dev.empathy.co/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }} --delete --cache-control max-age=3600
+          aws cloudfront create-invalidation --distribution-id ENVF22TWOF088 --paths '/*'
+      - name: Adding comment to PR with preview link and validation results
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.SUPPORT_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: '${{ github.event.inputs.prNum }}',
+              owner: 'empathyco',
+              repo: '${{ github.event.inputs.teamRepo }}',
+              body: `${{ github.event.inputs.prMessage }} [Check your eDocs preview](https://docs-dev.empathy.co/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }}/index.html)`
+            })
