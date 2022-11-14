@@ -60,7 +60,7 @@ jobs:
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
       run: |
-        aws eks update-kubeconfig --region eu-west-1 --name ${{ inputs.cluster-name }}
+        aws eks update-kubeconfig --region eu-west-1 --name ${{ inputs.cluster-name }} --role-arn arn:aws:iam::${{ inputs.aws-account-id }}:role/${{ inputs.role-to-assume }}
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
