@@ -32,9 +32,6 @@ on:
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
-    permissions:
-      id-token: write
-      contents: read
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v2
@@ -51,17 +48,12 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
-    - name: Configure AWS credentials from Websites account
-      if: steps.filter.outputs.folder == 'true'
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        role-to-assume: arn:aws:iam::${{ inputs.aws-account-id }}:role/${{ inputs.role-to-assume }}
-        aws-region: us-east-1
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
+      env:
+        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
-        aws sts get-caller-identity
-        aws eks update-kubeconfig --region eu-west-1 --name ${{ inputs.cluster-name }}
+        echo "${KUBE_CONFIG}" > .kube/config
         kubectl config view --minify
         kubectl get svc
         echo "\`\`\`diff" >> diff.txt
