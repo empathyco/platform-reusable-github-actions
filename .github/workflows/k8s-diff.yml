@@ -52,17 +52,12 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
-    - name: Set k8s context
-      if: steps.filter.outputs.folder == 'true'
-      uses: azure/k8s-set-context@v2
-      with:
-        method: kubeconfig
-        kubeconfig: $KUBECONFIG_SECRET
-      env:
-        KUBECONFIG_SECRET: ${{ secrets.KUBE_CONFIG_SHARED }}
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
+      env:
+        KUBECONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
+        echo $KUBECONFIG > $HOME/.kube/config
         kubectl get svc
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
