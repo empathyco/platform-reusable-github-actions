@@ -52,12 +52,14 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
-    - name: Helm chart diff
+    - name: Set k8s context
       if: steps.filter.outputs.folder == 'true'
       uses: azure/k8s-set-context@v2
       with:
         method: kubeconfig
         kubeconfig: ${{ secrets.KUBE_CONFIG_SHARED }}
+    - name: Helm chart diff
+      if: steps.filter.outputs.folder == 'true'
       run: |
         kubectl config view --minify
         kubectl get svc
