@@ -55,6 +55,7 @@ jobs:
       run: |
         mkdir -p ~/.kube
         echo "${KUBE_CONFIG}" > ~/.kube/config
+        kubectl config --kubeconfig=~/.kube/config use-context shared-services
         kubectl config view --minify
         kubectl get svc
         echo "\`\`\`diff" >> diff.txt
