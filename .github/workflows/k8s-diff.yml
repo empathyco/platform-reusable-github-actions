@@ -9,6 +9,10 @@ on:
         description: 'Release name'
         required: true
         type: string
+      cluster:
+        description: 'Cluster name'
+        required: true
+        type: string
     secrets:
       GH_TOKEN:
         required: true
