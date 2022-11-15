@@ -52,7 +52,7 @@ jobs:
         KUBECONFIG: ${{ secrets.KUBE_CONFIG_TEST }}
       run: |
         mkdir -p ~/.kube
-        echo $KUBECONFIG > $HOME/.kube/config
+        echo $KUBECONFIG | base64 -d > $HOME/.kube/config
         cat $HOME/.kube/config
         kubectl config --kubeconfig=$HOME/.kube/config use-context test
         kubectl get nodes
