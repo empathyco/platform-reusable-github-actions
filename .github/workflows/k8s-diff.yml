@@ -44,6 +44,7 @@ jobs:
         filters: |
           folder:
             - '${{ inputs.folder }}/${{ inputs.release-name }}/**'
+        token: ${{ secrets.SUPPORT_TOKEN }}
     - uses: alexellis/setup-arkade@v2
       if: steps.filter.outputs.folder == 'true'
     - uses: alexellis/arkade-get@master
