@@ -46,6 +46,13 @@ jobs:
       run: |
         mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
+    - name: Set kubeconfig
+      if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'test'
+      env:
+        KUBECONFIG: ${{ secrets.KUBE_CONFIG_TEST }}
+      run: |
+        mkdir -p ~/.kube
+        echo $KUBECONFIG > $HOME/.kube/config
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
       run: |
