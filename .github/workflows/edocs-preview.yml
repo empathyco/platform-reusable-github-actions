@@ -28,8 +28,23 @@ env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
 jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      runner: ${{ steps.get-runner.outputs.runner }}
+    steps:
+      - name: Check if repo is public or not
+        id: get-runner
+        run: |
+          echo "${{ github.event.inputs.publicRepo }}"
+          if [ ${{ github.event.inputs.publicRepo }} == 'true']; then
+            echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
+          else
+            echo "runner=[self-hosted, platform]" >> $GITHUB_OUTPUT
+          fi
   build:
-    runs-on: ${{ github.event.inputs.publicRepo != 'true' && '[self-hosted, platform]' || 'ubuntu-latest' }}
+    needs: setup
+    runs-on: ${{ needs.setup.outputs.runner }}
     permissions:
       id-token: write
       contents: read
