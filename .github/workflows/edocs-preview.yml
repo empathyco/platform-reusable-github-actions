@@ -22,8 +22,8 @@ on:
       publicRepo:
         description: 'Is the repository public?'
         required: false
-        default: false
-        type: boolean
+        default: 'false'
+        type: string
 env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Check if repo is public or not
         id: get-runner
-        run:  echo "runner=${{ github.event.inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}" >> $GITHUB_OUTPUT
+        run:  echo "runner=${{ github.event.inputs.publicRepo == 'true' && 'ubuntu-latest' || '[self-hosted, platform]' }}" >> $GITHUB_OUTPUT
   build:
     needs: setup
     runs-on: ${{ needs.setup.outputs.runner }}
