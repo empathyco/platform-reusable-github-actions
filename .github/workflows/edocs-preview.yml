@@ -5,16 +5,20 @@ on:
       teamRepo:
         description: 'Team to sync with eDocs'
         required: true
+        type: string
       branch:
         description: 'Branch to take the files from'
         required: true
+        type: string
       prNum:
         description: 'PR number'
         required: true
+        type: string
       prMessage:
         description: 'Message for preview comment'
         required: false
         default: ''
+        type: string
 env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
