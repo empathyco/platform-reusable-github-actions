@@ -9,6 +9,9 @@ on:
         description: 'Release name'
         required: true
         type: string
+    secrets:
+      GH_TOKEN:
+        required: true
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
@@ -44,10 +47,8 @@ jobs:
         echo "\`\`\`" >> diff.txt
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
-      env:
-        GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
       with:
-        github-token: ${GH_TOKEN}
+        github-token: ${{ secrets.GH_TOKEN }}
         script: |
           const fs = require('fs');
           github.rest.issues.createComment({
