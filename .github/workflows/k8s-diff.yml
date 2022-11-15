@@ -13,11 +13,15 @@ on:
         description: 'Cluster name'
         required: true
         type: string
+      namespace:
+        description: 'Namespace name'
+        required: true
+        type: string
     secrets:
       GH_TOKEN:
         required: true
       KUBECONFIG:
-        required: true
+        required: false
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
@@ -46,19 +50,18 @@ jobs:
       run: |
         mkdir -p ~/.kube
         echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
+        kubectl config --kubeconfig=$HOME/.kube/config use-context shared-services
     - name: Set kubeconfig test cluster
       if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'test'
       run: |
         mkdir -p ~/.kube
         echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
-        cat $HOME/.kube/config
         kubectl config --kubeconfig=$HOME/.kube/config use-context test
-        kubectl get nodes
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
       run: |
         echo "\`\`\`diff" >> diff.txt
-        helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
+        helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - -n ${{ inputs.namespace }} 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
