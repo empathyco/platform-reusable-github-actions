@@ -27,7 +27,9 @@ on:
     secrets:
       GH_TOKEN:
         required: true
-      JIRA_TOKEN:
+      JIRA_USER_EMAIL:
+        required: true
+      JIRA_API_TOKEN:
         required: true
 jobs:
   build:
@@ -52,10 +54,11 @@ jobs:
       - name: Building project
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
-          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
+          JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
         run: |
           echo "${{ secrets.GH_TOKEN }}"
-          echo "${{ secrets.JIRA_TOKEN }}"
+          echo "${{ secrets.JIRA_USER_EMAIL }}"
+          echo "${{ secrets.JIRA_API_TOKEN }}"
           echo "${{ env.GH_TOKEN }}"
           echo "${{ env.JIRA_TOKEN }}"
           cd docs-empathy
