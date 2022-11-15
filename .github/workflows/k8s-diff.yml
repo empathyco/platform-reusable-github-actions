@@ -9,26 +9,6 @@ on:
         description: 'Release name'
         required: true
         type: string
-      aws-account-id:
-        description: 'AWS Account ID'
-        required: true
-        type: string
-      role-to-assume:
-        description: 'Role to assume'
-        required: true
-        type: string
-      cluster-name:
-        description: 'Cluster name'
-        required: true
-        type: string
-      issue-number:
-        description: 'PR number'
-        required: true
-        type: string
-      repo:
-        description: 'Repository name'
-        required: true
-        type: string
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
@@ -59,19 +39,20 @@ jobs:
       run: |
         mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
-        kubectl get svc
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
+      env:
+        GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
       with:
-        github-token: ${{ secrets.SUPPORT_TOKEN }}
+        github-token: ${GH_TOKEN}
         script: |
           const fs = require('fs');
           github.rest.issues.createComment({
-            issue_number: '${{ inputs.issue-number }}',
-            owner: 'empathyco',
-            repo: '${{ inputs.repo }}',
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
             body: fs.readFileSync('diff.txt', 'utf8')
           })
