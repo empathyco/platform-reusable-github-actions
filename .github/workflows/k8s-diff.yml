@@ -32,6 +32,10 @@ on:
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
+    permissions:
+      id-token: write
+      contents: read
+      actions: read
     steps:
     - uses: actions/checkout@v3
     - uses: dorny/paths-filter@v2
@@ -50,13 +54,11 @@ jobs:
         helm: latest
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
-      env:
-        KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
+      uses: azure/k8s-set-context@v2
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
-        mkdir -p ~/.kube
-        echo ${KUBE_CONFIG} > $HOME/.kube/config
-        cat $HOME/.kube/config
-        kubectl config --kubeconfig=$HOME/.kube/config use-context shared-services
         kubectl config view --minify
         kubectl get svc
         echo "\`\`\`diff" >> diff.txt
