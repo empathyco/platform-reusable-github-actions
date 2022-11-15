@@ -24,9 +24,11 @@ on:
         required: false
         default: false
         type: boolean
-env:
-  GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
-  JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
+    secrets:
+      GH_TOKEN:
+        required: true
+      JIRA_TOKEN:
+        required: true
 jobs:
   build:
     runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
@@ -44,7 +46,7 @@ jobs:
           ref: 'main'
           repository: empathyco/docs-empathy
           path: docs-empathy
-          token: ${GH_TOKEN}
+          token: ${{ secrets.GH_TOKEN }}
       - name: Installing dependencies
         run: cd docs-empathy && npm ci
       - name: Building project
@@ -64,7 +66,7 @@ jobs:
       - name: Adding comment to PR with preview link and validation results
         uses: actions/github-script@v5
         with:
-          github-token: ${{ secrets.SUPPORT_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           script: |
             github.rest.issues.createComment({
               issue_number: '${{ inputs.prNum }}',
