@@ -22,8 +22,8 @@ on:
       publicRepo:
         description: 'Is the repository public?'
         required: false
-        default: 'true'
-        type: string
+        default: false
+        type: boolean
 env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
@@ -37,7 +37,7 @@ jobs:
         id: get-runner
         run: |
           echo "${{ inputs.publicRepo }}"
-          if [ ${{ inputs.publicRepo }} == 'true']; then
+          if [ ${{ inputs.publicRepo }} ]; then
             echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
           else
             echo "runner=[self-hosted, platform]" >> $GITHUB_OUTPUT
