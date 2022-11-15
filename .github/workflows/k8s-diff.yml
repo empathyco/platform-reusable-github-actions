@@ -53,6 +53,7 @@ jobs:
       env:
         KUBE_CONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
+        mkdir -p ~/.kube
         echo "${KUBE_CONFIG}" > ~/.kube/config
         kubectl config view --minify
         kubectl get svc
