@@ -65,5 +65,5 @@ jobs:
               issue_number: '${{ github.event.inputs.prNum }}',
               owner: 'empathyco',
               repo: '${{ github.event.inputs.teamRepo }}',
-              body: `${{ github.event.inputs.prMessage }} [Check your eDocs preview](https://docs-dev.empathy.co/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }}/index.html)`
+              body: `${{ github.event.inputs.prMessage }} [Check out EPDocs preview](https://docs-dev.empathy.co/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }}/index.html)`
             })
