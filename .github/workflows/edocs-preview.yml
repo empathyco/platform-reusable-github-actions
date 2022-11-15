@@ -19,12 +19,17 @@ on:
         required: false
         default: ''
         type: string
+      publicRepo:
+        description: 'Is the repository public?'
+        required: false
+        default: false
+        type: boolean
 env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
 jobs:
   build:
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ github.event.inputs.publicRepo && ubuntu-latest || [self-hosted, platform] }}
     permissions:
       id-token: write
       contents: read
