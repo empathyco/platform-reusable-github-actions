@@ -37,7 +37,7 @@ jobs:
       - name: Check if repo is public or not
         id: get-runner
         run: |
-          if [ ${{ github.event.inputs.publicRepo }} == true]; then
+          if [ ${{ github.event.inputs.publicRepo }} == 'true']; then
             echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
           else
             echo "runner=[self-hosted, platform]" >> $GITHUB_OUTPUT
