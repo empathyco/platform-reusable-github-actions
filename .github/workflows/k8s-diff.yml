@@ -16,6 +16,8 @@ on:
     secrets:
       GH_TOKEN:
         required: true
+      KUBECONFIG:
+        required: true
 jobs:
   reusable_workflow_job:
     runs-on: [self-hosted, platform]
@@ -41,18 +43,14 @@ jobs:
         helm: latest
     - name: Set kubeconfig shared cluster
       if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'shared'
-      env:
-        KUBECONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
         mkdir -p ~/.kube
-        echo $KUBECONFIG > $HOME/.kube/config
+        echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
     - name: Set kubeconfig test cluster
       if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'test'
-      env:
-        KUBECONFIG: ${{ secrets.KUBE_CONFIG_TEST }}
       run: |
         mkdir -p ~/.kube
-        echo $KUBECONFIG | base64 -d > $HOME/.kube/config
+        echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
         cat $HOME/.kube/config
         kubectl config --kubeconfig=$HOME/.kube/config use-context test
         kubectl get nodes
