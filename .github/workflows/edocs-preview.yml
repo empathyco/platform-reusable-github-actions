@@ -22,7 +22,7 @@ on:
       publicRepo:
         description: 'Is the repository public?'
         required: false
-        default: 'false'
+        default: 'true'
         type: string
 env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
