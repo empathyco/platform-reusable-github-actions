@@ -39,20 +39,21 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
-    - name: Set kubeconfig
+    - name: Set kubeconfig shared cluster
       if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'shared'
       env:
         KUBECONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
         mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
-    - name: Set kubeconfig
+    - name: Set kubeconfig test cluster
       if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'test'
       env:
         KUBECONFIG: ${{ secrets.KUBE_CONFIG_TEST }}
       run: |
         mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
+        kubectl get nodes
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
       run: |
