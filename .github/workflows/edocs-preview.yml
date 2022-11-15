@@ -44,7 +44,7 @@ jobs:
           ref: 'main'
           repository: empathyco/docs-empathy
           path: docs-empathy
-          token: ${{ secrets.SUPPORT_TOKEN }}
+          token: ${GH_TOKEN}
       - name: Installing dependencies
         run: cd docs-empathy && npm ci
       - name: Building project
