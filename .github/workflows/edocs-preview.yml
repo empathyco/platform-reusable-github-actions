@@ -27,9 +27,10 @@ on:
 env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
+  RUNNER: ${{ github.event.inputs.publicRepo }} == true && 'ubuntu-latest' || [self-hosted, platform]
 jobs:
   build:
-    runs-on: ${{ github.event.inputs.publicRepo == true && 'ubuntu-latest' || [self-hosted, platform] }}
+    runs-on: ${{ env.RUNNER }}
     permissions:
       id-token: write
       contents: read
