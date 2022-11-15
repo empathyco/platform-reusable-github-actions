@@ -28,23 +28,8 @@ env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
 jobs:
-  setup:
-    runs-on: ubuntu-latest
-    outputs:
-      runner: ${{ steps.get-runner.outputs.runner }}
-    steps:
-      - name: Check if repo is public or not
-        id: get-runner
-        run: |
-          echo "${{ inputs.publicRepo }}"
-          if [ ${{ inputs.publicRepo }} ]; then
-            echo "runner=ubuntu-latest" >> $GITHUB_OUTPUT
-          else
-            echo "runner=[self-hosted, platform]" >> $GITHUB_OUTPUT
-          fi
   build:
-    needs: setup
-    runs-on: ${{ needs.setup.outputs.runner }}
+    runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
     permissions:
       id-token: write
       contents: read
@@ -65,7 +50,7 @@ jobs:
       - name: Building project
         run: |
           cd docs-empathy
-          CUSTOM_REMOTE='{"repo": "${{ github.event.inputs.teamRepo }}", "branch": "${{ github.event.inputs.branch }}"}' BASE_URL=/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }}/ npm run build
+          CUSTOM_REMOTE='{"repo": "${{ inputs.teamRepo }}", "branch": "${{ inputs.branch }}"}' BASE_URL=/preview/${{ inputs.teamRepo }}-${{ inputs.prNum }}/ npm run build
       - name: Configure AWS credentials from Websites account
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -74,7 +59,7 @@ jobs:
       - name: Sync files to the bucket and invalidate CloudFront cache
         run: |
           cd docs-empathy
-          aws s3 sync build s3://docs-dev.empathy.co/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }} --delete --cache-control max-age=3600
+          aws s3 sync build s3://docs-dev.empathy.co/preview/${{ inputs.teamRepo }}-${{ inputs.prNum }} --delete --cache-control max-age=3600
           aws cloudfront create-invalidation --distribution-id ENVF22TWOF088 --paths '/*'
       - name: Adding comment to PR with preview link and validation results
         uses: actions/github-script@v5
@@ -82,8 +67,8 @@ jobs:
           github-token: ${{ secrets.SUPPORT_TOKEN }}
           script: |
             github.rest.issues.createComment({
-              issue_number: '${{ github.event.inputs.prNum }}',
+              issue_number: '${{ inputs.prNum }}',
               owner: 'empathyco',
-              repo: '${{ github.event.inputs.teamRepo }}',
-              body: `${{ github.event.inputs.prMessage }} [Check out EPDocs preview](https://docs-dev.empathy.co/preview/${{ github.event.inputs.teamRepo }}-${{ github.event.inputs.prNum }}/index.html)`
+              repo: '${{ inputs.teamRepo }}',
+              body: `${{ inputs.prMessage }} [Check out EPDocs preview](https://docs-dev.empathy.co/preview/${{ inputs.teamRepo }}-${{ inputs.prNum }}/index.html)`
             })
