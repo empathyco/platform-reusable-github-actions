@@ -57,6 +57,7 @@ jobs:
       env:
         KUBECONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
+        mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
         kubectl get svc
         echo "\`\`\`diff" >> diff.txt
