@@ -54,7 +54,7 @@ jobs:
         mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
         cat $HOME/.kube/config
-        kubectl use-context test
+        kubectl config --kubeconfig=$HOME/.kube/config use-context test
         kubectl get nodes
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
