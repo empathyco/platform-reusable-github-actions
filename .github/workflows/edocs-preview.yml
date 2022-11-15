@@ -50,6 +50,9 @@ jobs:
       - name: Installing dependencies
         run: cd docs-empathy && npm ci
       - name: Building project
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          JIRA_TOKEN: ${{ secrets.JIRA_TOKEN }}
         run: |
           cd docs-empathy
           CUSTOM_REMOTE='{"repo": "${{ inputs.teamRepo }}", "branch": "${{ inputs.branch }}"}' BASE_URL=/preview/${{ inputs.teamRepo }}-${{ inputs.prNum }}/ npm run build
