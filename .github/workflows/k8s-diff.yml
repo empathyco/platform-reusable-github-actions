@@ -35,13 +35,16 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
-    - name: Helm chart diff
-      if: steps.filter.outputs.folder == 'true'
+    - name: Set kubeconfig
+      if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'shared'
       env:
         KUBECONFIG: ${{ secrets.KUBE_CONFIG_SHARED }}
       run: |
         mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
+    - name: Helm chart diff
+      if: steps.filter.outputs.folder == 'true'
+      run: |
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
