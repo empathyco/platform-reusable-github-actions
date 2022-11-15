@@ -35,7 +35,7 @@ jobs:
     steps:
       - name: Check if repo is public or not
         id: get-runner
-        run:  echo "runner=${{ github.event.inputs.publicRepo == true && 'ubuntu-latest' || '[self-hosted, platform]' }}" >> $GITHUB_OUTPUT
+        run:  echo "runner=${{ github.event.inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}" >> $GITHUB_OUTPUT
   build:
     needs: setup
     runs-on: ${{ needs.setup.outputs.runner }}
