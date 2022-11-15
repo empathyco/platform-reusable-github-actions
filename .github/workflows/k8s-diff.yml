@@ -53,6 +53,7 @@ jobs:
       run: |
         mkdir -p ~/.kube
         echo $KUBECONFIG > $HOME/.kube/config
+        cat $HOME/.kube/config
         kubectl get nodes
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
