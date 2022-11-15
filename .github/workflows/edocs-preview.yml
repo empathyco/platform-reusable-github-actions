@@ -29,7 +29,7 @@ env:
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
 jobs:
   build:
-    runs-on: ${{ github.event.inputs.publicRepo == true && ubuntu-latest || [self-hosted, platform] }}
+    runs-on: github.event.inputs.publicRepo == true && ubuntu-latest || [self-hosted, platform]
     permissions:
       id-token: write
       contents: read
