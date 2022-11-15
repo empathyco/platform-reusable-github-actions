@@ -27,7 +27,6 @@ on:
 env:
   GH_TOKEN: ${{ secrets.SUPPORT_TOKEN }}
   JIRA_TOKEN: ${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}
-  RUNNER: ${{ github.event.inputs.publicRepo }} == true && 'ubuntu-latest' || [self-hosted, platform]
 jobs:
   setup:
     runs-on: ubuntu-latest
@@ -36,7 +35,7 @@ jobs:
     steps:
       - name: Check if repo is public or not
         id: get-runner
-        run:  echo "runner=${{ github.event.inputs.publicRepo == 'true' && ubuntu-latest || [self-hosted, platform] }}" >> $GITHUB_OUTPUT
+        run:  echo "runner=${{ github.event.inputs.publicRepo == 'true' && 'ubuntu-latest' || ['self-hosted', 'platform'] }}" >> $GITHUB_OUTPUT
   build:
     needs: setup
     runs-on: ${{ needs.setup.outputs.runner }}
