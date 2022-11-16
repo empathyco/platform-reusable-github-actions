@@ -56,11 +56,13 @@ jobs:
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
       run: |
-        echo "<details>" >> diff.txt
+        echo "<details><summary>Helm diff</summary>\n" >> diff.txt
         echo "\`\`\`diff" >> diff.txt
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - -n ${{ inputs.namespace }} 2>&1 >> diff.txt || true
         echo "\`\`\`" >> diff.txt
-        echo "</details>" >> diff.txt
+        echo "</details>\n" >> diff.txt
+        echo "---" >> diff.txt
+        echo ":warning: Review this comment before merge!" >> diff.txt
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
       with:
