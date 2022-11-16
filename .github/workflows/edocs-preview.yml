@@ -55,14 +55,11 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           JIRA_TOKEN: "${{ secrets.JIRA_USER_EMAIL }}:${{ secrets.JIRA_API_TOKEN }}"
+          CUSTOM_REMOTE: '{"repo": "${{ inputs.teamRepo }}", "branch": "${{ inputs.branch }}"}'
+          BASE_URL: "/preview/${{ inputs.teamRepo }}-${{ inputs.prNum }}/"
         run: |
-          echo "${{ secrets.GH_TOKEN }}"
-          echo "${{ secrets.JIRA_USER_EMAIL }}"
-          echo "${{ secrets.JIRA_API_TOKEN }}"
-          echo "${{ env.GH_TOKEN }}"
-          echo "${{ env.JIRA_TOKEN }}"
           cd docs-empathy
-          CUSTOM_REMOTE='{"repo": "${{ inputs.teamRepo }}", "branch": "${{ inputs.branch }}"}' BASE_URL=/preview/${{ inputs.teamRepo }}-${{ inputs.prNum }}/ npm run build
+          npm run build
       - name: Configure AWS credentials from Websites account
         uses: aws-actions/configure-aws-credentials@v1
         with:
