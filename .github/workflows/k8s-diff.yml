@@ -56,7 +56,7 @@ jobs:
     - name: Helm chart diff
       if: steps.filter.outputs.folder == 'true'
       run: |
-        echo "Ran Diff for chart: `${{ inputs.folder}}/${{ inputs.release-name}}` in namespace: `${{ inputs.namespace }}`" >> diff.txt
+        echo "Ran Diff for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
         echo "<details><summary>Show Output</summary>" >> diff.txt
         echo "" >> diff.txt
         echo "\`\`\`diff" >> diff.txt
