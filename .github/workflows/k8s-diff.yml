@@ -66,7 +66,7 @@ jobs:
         echo "" >> diff.txt
         echo "---" >> diff.txt
         echo "" >> diff.txt
-        echo "<h1 style='color: red'>:warning: **Review this comment before merge!** :warning:</h1>" >> diff.txt
+        echo "<h1 style='color: red;'>:warning: <strong>Review this comment before merge!</strong> :warning:</h1>" >> diff.txt
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
       with:
