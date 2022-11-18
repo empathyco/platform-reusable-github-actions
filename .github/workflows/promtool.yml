@@ -1,0 +1,41 @@
+name: Check Prometheus Alert rules
+
+on:
+  workflow_call:
+    inputs:
+      rules-generator:
+        description: "Prometheus rules path"
+        required: true
+        type: string
+      working-directory:
+        description: "Charts folder"
+        required: true
+        type: string
+
+jobs:
+  promtool:
+    name: Promtool
+    runs-on: [self-hosted, platform]
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: alexellis/setup-arkade@v1
+
+      - uses: alexellis/arkade-get@master
+        with:
+          helm: v3.10.1
+          yq: v4.28.1
+
+      - run: |
+          helm template . -s ${{ inputs.path }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
+        working-directory: ${{ inputs.working-directory }}
+
+      - name: Check Prometheus alert rules
+        uses: peimanja/promtool-github-actions@master
+        with:
+          promtool_actions_subcommand: "rules"
+          promtool_actions_files: "promtool-rules.yaml"
+          promtool_actions_version: "2.14.0"
+          promtool_actions_comment: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
