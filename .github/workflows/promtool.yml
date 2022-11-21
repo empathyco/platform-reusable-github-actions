@@ -3,7 +3,7 @@ name: Check Prometheus Alert rules
 on:
   workflow_call:
     inputs:
-      rules-generator:
+      path:
         description: "Prometheus rules path"
         required: true
         type: string
