@@ -35,7 +35,8 @@ jobs:
       - name: Get prometheus rules
         working-directory: ${{ inputs.working-directory }}
         run: |
-           echo `pwd ; `helm template . -s ${{ inputs.path }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
+          echo `pwd`
+          helm template . -s ${{ inputs.path }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
 
 
       - name: Check Prometheus alert rules
