@@ -29,11 +29,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.SUPPORT_TOKEN }}
+          token: ${{ secrets.S GH_TOKEN }}
       - uses: Stockopedia/action-get-changed-files@v1
         id: get_changed
         with:
-          github-token: ${{ secrets.SUPPORT_TOKEN }}
+          github-token: ${{ secrets.GH_TOKEN }}
           ignore: ".github"
           foldersOnly: true
           format: json
