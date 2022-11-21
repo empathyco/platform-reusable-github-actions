@@ -12,7 +12,7 @@ on:
         required: true
         type: string
     secrets:
-      GITHUB_TOKEN:
+      GH_TOKEN:
         required: true
 jobs:
   promtool:
@@ -40,4 +40,4 @@ jobs:
           promtool_actions_version: "2.14.0"
           promtool_actions_comment: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
