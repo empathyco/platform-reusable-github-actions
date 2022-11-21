@@ -11,13 +11,17 @@ on:
         description: "Charts folder"
         required: true
         type: string
+      publicRepo:
+        description: "Whether the repository is public or private"
+        required: true
+        type: boolean
     secrets:
       GH_TOKEN:
         required: true
 jobs:
   promtool:
     name: Promtool
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
     steps:
       - uses: actions/checkout@v3
 
