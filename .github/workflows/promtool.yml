@@ -31,10 +31,12 @@ jobs:
         with:
           helm: v3.10.1
           yq: v4.28.1
-
-      - run: |
-          helm template . -s ${{ inputs.path }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
+      
+      - name: Get prometheus rules
         working-directory: ${{ inputs.working-directory }}
+        run: |
+          helm template . -s ${{ inputs.path }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
+
 
       - name: Check Prometheus alert rules
         uses: peimanja/promtool-github-actions@master
