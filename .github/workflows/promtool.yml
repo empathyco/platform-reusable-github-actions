@@ -29,7 +29,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.S GH_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
       - uses: Stockopedia/action-get-changed-files@v1
         id: get_changed
         with:
