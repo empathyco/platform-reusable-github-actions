@@ -19,11 +19,29 @@ on:
       GH_TOKEN:
         required: true
 jobs:
-  promtool:
-    name: Promtool
+  setup:
+    name: setup
     runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: Stockopedia/action-get-changed-files@v1
+        id: get_changed
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          ignore: ".github"
+          foldersOnly: true
+          format: json
+
+  promtool:
+    needs: [setup]
+    runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
+    strategy:
+      matrix:
+        folder-name: ${{fromJson(needs.setup.outputs.folders-list)}}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.SUPPORT_TOKEN }}
 
       - uses: alexellis/setup-arkade@v1
 
@@ -31,13 +49,12 @@ jobs:
         with:
           helm: v3.10.1
           yq: v4.28.1
-      
+
       - name: Get prometheus rules
-        working-directory: ${{ inputs.working-directory }}
+        working-directory: ${{ matrix.folder-name }}
         run: |
           echo `pwd`
           helm template . -s ${{ inputs.path }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
-
 
       - name: Check Prometheus alert rules
         uses: peimanja/promtool-github-actions@master
