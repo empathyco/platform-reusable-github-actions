@@ -23,6 +23,12 @@ jobs:
     name: setup
     runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
     steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          token: ${{ secrets.GH_TOKEN }}
+          
       - uses: Stockopedia/action-get-changed-files@v1
         id: get_changed
         with:
@@ -41,7 +47,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         with:
-          token: ${{ secrets.SUPPORT_TOKEN }}
+          token: ${{ secrets.GH_TOKEN }}
 
       - uses: alexellis/setup-arkade@v1
 
