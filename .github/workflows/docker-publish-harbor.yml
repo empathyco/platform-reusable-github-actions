@@ -9,7 +9,7 @@ on:
         description: 'Artifact'
         required: true
         type: string
-      artifact-version:
+      version:
         description: 'Artifact version'
         required: true
         type: string
@@ -22,10 +22,10 @@ jobs:
   docker-publish-harbor:
     uses: empathyco/platform-reusable-github-actions/.github/workflows/docker-publish.yml@main
     with:
-      registry-url: 'harbor.internal.shared.empathy.co/'
+      registry-url: 'harbor.internal.shared.empathy.co'
       project: ${{ inputs.project }}
       artifact: ${{ inputs.artifact }}
-      artifact-version: ${{ inputs.artifact-version }}
+      version: ${{ inputs.version }}
       image-artifact: ${{ inputs.image-artifact }}
     secrets:
       username: ${{ secrets.HARBOR_USERNAME }}

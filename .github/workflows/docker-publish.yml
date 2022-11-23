@@ -35,7 +35,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ image-artifact }}
+          name: ${{ inputs.image-artifact }}
           path: .
       - name: ⚙️ Set up Docker Context for Buildx
         run: |
@@ -55,4 +55,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ inputs.registry-url }}/${{ inputs.project }}/${{ inputs.artifact }}:${{ inputs.artifact-version }}
+          tags: ${{ inputs.registry-url }}/${{ inputs.project }}/${{ inputs.artifact }}:${{ inputs.version }}
