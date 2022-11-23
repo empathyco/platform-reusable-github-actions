@@ -3,52 +3,23 @@ name: Check Prometheus Alert rules
 on:
   workflow_call:
     inputs:
-      path:
-        description: "Prometheus rules path"
+      prometheus-rules:
+        description: "Command to generate the prometheus rules"
         required: true
         type: string
       working-directory:
-        description: "Charts folder"
+        description: "Helm chart folder"
         required: true
         type: string
-      publicRepo:
-        description: "Whether the repository is public or private"
-        required: true
-        type: boolean
     secrets:
       GH_TOKEN:
         required: true
 jobs:
-  setup:
-    name: setup
-    runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
-    outputs:
-      folders-list: ${{ steps.get_changed.outputs.changed }}
-    
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_TOKEN }}
-      - uses: Stockopedia/action-get-changed-files@v1
-        id: get_changed
-        with:
-          github-token: ${{ secrets.GH_TOKEN }}
-          ignore: ".github"
-          foldersOnly: true
-          format: json
-
   promtool:
-    needs: [setup]
-    runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
-    strategy:
-      matrix:
-        folder-name: ${{fromJson(needs.setup.outputs.folders-list)}}
+    name: Promtool
+    runs-on: [self-hosted, platform]
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          token: ${{ secrets.GH_TOKEN }}
+      - uses: actions/checkout@v3
 
       - uses: alexellis/setup-arkade@v1
 
@@ -56,13 +27,13 @@ jobs:
         with:
           helm: v3.10.1
           yq: v4.28.1
-
+      
       - name: Get prometheus rules
-        working-directory: ${{ matrix.folder-name }}
+        working-directory: ${{ inputs.working-directory }}
         run: |
           echo `pwd`
-          helm template . -s ${{ inputs.path }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
-
+          helm template . -s ${{ inputs.prometheus-rules }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
+      
       - name: Check Prometheus alert rules
         uses: peimanja/promtool-github-actions@master
         with:
