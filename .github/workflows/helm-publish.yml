@@ -1,0 +1,46 @@
+on:
+  workflow_call:
+    inputs:
+      registry-url:
+        description: 'Registry location'
+        required: true
+        type: string
+      project:
+        description: 'Project where the artifact is included'
+        required: true
+        type: string
+      chart-location:
+        description: 'Chart location in the source repository'
+        required: false
+        default: ./helm
+        type: string
+      chart-version:
+        description: 'Artifact version'
+        required: true
+        type: string
+    secrets:
+      username:
+        description: 'Registry username'
+        required: true
+        type: string
+      password:
+        description: 'Registry password'
+        required: true
+        type: string
+
+jobs:
+  reusable_workflow_job:
+    runs-on: [ self-hosted, platform ]
+    steps:
+      - name: ⚙️ Setup helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.10.1
+      - name: ⚙️ Install helm chartmuseum plugin
+        run: |
+          helm plugin install https://github.com/chartmuseum/helm-push --version=0.10.3
+      - name: ⬇️ Checkout sourced repository
+        uses: actions/checkout@v3
+      - name: ✏️⬆️ Push helm chart
+        run: |
+          helm cm-push ${{ input.chart-location }} https://${{ input.registry-url }}/${{ input.project }} -u ${{ secrets.username }} -p ${{ secrets.password }} -v ${{ input.chart-version }}

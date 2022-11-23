@@ -1,0 +1,39 @@
+on:
+  workflow_call:
+    inputs:
+      yaml-filepath:
+        description: 'Path to the yaml file'
+        required: true
+        type: string
+      yaml-filename:
+        description: 'Yaml filename'
+        required: true
+        type: string
+      yaml-version-path:
+        description: 'Path to the image tag property in the yaml values file'
+        required: true
+        type: string
+      version:
+        description: 'Version'
+        required: true
+        type: string
+      project:
+        description: 'Project where the artifact is included'
+        required: true
+        type: string
+
+jobs:
+  reusable_workflow_job:
+    uses: helm
+    with:
+      repository: 'empathyco/platform-eks-test-workloads'
+      branch: 'main'
+      yaml-filepath: ${{ inputs.yaml-filepath }}
+      yaml-version-path: ${{ inputs.yaml-version-path }}
+      version: ${{ inputs.version }}
+      registry-url: 'harbor.internal.shared.empathy.co/'
+      project: ${{ input.project }}
+    secrets:
+      repository-token: ${{ secrets.SUPPORT_TOKEN }}
+      username: ${{ secrets.HARBOR_USERNAME }}
+      password: ${{ secrets.HARBOR_TOKEN }}

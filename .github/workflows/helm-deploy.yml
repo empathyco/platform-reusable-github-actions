@@ -1,0 +1,81 @@
+on:
+  workflow_call:
+    inputs:
+      repository:
+        description: 'Repository to deploy'
+        default: 'empathyco/platform-eks-test-workloads'
+        required: true
+        type: string
+      branch:
+        description: 'Branch where the change will be applied'
+        default: 'main'
+        required: false
+        type: string
+      yaml-filepath:
+        description: 'Path to the yaml file'
+        required: true
+        type: string
+      yaml-filename:
+        description: 'Yaml filename'
+        required: true
+        type: string
+      yaml-version-path:
+        description: 'Yaml path where the version property is set'
+        required: true
+        type: string
+      version:
+        required: true
+        type: string
+      registry-url:
+        description: 'Registry location'
+        required: true
+        type: string
+      project:
+        description: 'Project where the artifact is included'
+        required: true
+        type: string
+    secrets:
+      repository-token:
+        description: 'Token to clone repository'
+        required: true
+        type: string
+      username:
+        description: 'Registry username'
+        required: true
+        type: string
+      password:
+        description: 'Registry password'
+        required: true
+        type: string
+
+
+jobs:
+  reusable_workflow_job:
+    runs-on: [ self-hosted, platform ]
+    steps:
+      - name: ⚙️ Setup helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.10.1
+      - name: ⚙️ Setup yq
+        uses: frenck/action-setup-yq@v1
+      - name: ⬇️ Checkout targeted repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ input.repository }}
+          ref: ${{ input.branch }}
+          token: ${{ secrets.repository-token }}
+          path: 'targeted-repository'
+      - name: ✏️ Modify version
+        run: |
+          yq -i '${{ input.yaml-version-path }} = "${{ input.version }}"' 'targeted-repository/${{ input.yaml-filepath }}/${{ input.yaml-filename }}'
+      - name: ✏️ Update chart
+        run: |
+          helm repo add -u ${{ secrets.username }} -p ${{ secrets.password }} empathy https://${{ input.registry-url }}/${{ input.project }}
+          helm dep update 'targeted-repository/${{ input.yaml-file }}'
+      - name: ⬆️ Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: 'Update ${{ input.yaml-filepath }}/${{ input.yaml-filename }} to version ${{ input.version }}'
+          branch: main
+          repository: 'targeted-repository'

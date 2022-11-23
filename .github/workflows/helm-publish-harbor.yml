@@ -1,0 +1,30 @@
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: 'Project where the artifact is included'
+        required: true
+        type: string
+      chart-location:
+        description: 'Chart location in the source repository'
+        required: false
+        type: string
+      chart-version:
+        description: 'Artifact version'
+        required: true
+        type: string
+
+jobs:
+  reusable_workflow_job:
+    runs-on: [ self-hosted, platform ]
+    steps:
+      - name:
+        uses: empathyco/platform-reusable-github-actions/.github/workflows/helm-publish.yml@main
+        with:
+          registry-url: 'harbor.internal.shared.empathy.co/'
+          project: ${{ input.project }}
+          chart-location: ${{ input.chart-location }}
+          chart-version: ${{ input.chart-version }}
+        secrets:
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_TOKEN }}
