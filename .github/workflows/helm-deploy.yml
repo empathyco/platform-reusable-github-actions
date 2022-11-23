@@ -57,20 +57,20 @@ jobs:
       - name: ⬇️ Checkout targeted repository
         uses: actions/checkout@v3
         with:
-          repository: ${{ input.repository }}
-          ref: ${{ input.branch }}
+          repository: ${{ inputs.repository }}
+          ref: ${{ inputs.branch }}
           token: ${{ secrets.repository-token }}
           path: 'targeted-repository'
       - name: ✏️ Modify version
         run: |
-          yq -i '${{ input.yaml-version-path }} = "${{ input.version }}"' 'targeted-repository/${{ input.yaml-filepath }}'
+          yq -i '${{ inputs.yaml-version-path }} = "${{ inputs.version }}"' 'targeted-repository/${{ inputs.yaml-filepath }}'
       - name: ✏️ Update chart
         run: |
-          helm repo add -u ${{ secrets.username }} -p ${{ secrets.password }} empathy https://${{ input.registry-url }}/${{ input.project }}
-          helm dep update 'targeted-repository/${{ input.yaml-filepath }}'
+          helm repo add -u ${{ secrets.username }} -p ${{ secrets.password }} empathy https://${{ inputs.registry-url }}/${{ inputs.project }}
+          helm dep update 'targeted-repository/${{ inputs.yaml-filepath }}'
       - name: ⬆️ Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: 'Update ${{ input.yaml-filepath }} to version ${{ input.version }}'
+          commit_message: 'Update ${{ inputs.yaml-filepath }} to version ${{ inputs.version }}'
           branch: main
           repository: 'targeted-repository'
