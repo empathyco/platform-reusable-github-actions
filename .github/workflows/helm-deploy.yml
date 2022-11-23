@@ -3,7 +3,6 @@ on:
     inputs:
       repository:
         description: 'Repository to deploy'
-        default: 'empathyco/platform-eks-test-workloads'
         required: true
         type: string
       branch:
