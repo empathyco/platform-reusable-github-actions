@@ -15,7 +15,7 @@ on:
         type: string
 
 jobs:
-  reusable_workflow_job:
+  helm-publish-harbor:
     runs-on: [ self-hosted, platform ]
     steps:
       - name:
