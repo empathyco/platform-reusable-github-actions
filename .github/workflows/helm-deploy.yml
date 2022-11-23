@@ -14,7 +14,7 @@ on:
         description: 'Path to the yaml file'
         required: true
         type: string
-      isChart:
+      is-chart:
         description: 'True if deploying a helm chart'
         default: false
         required: false
@@ -68,9 +68,9 @@ jobs:
           path: 'targeted-repository'
       - name: ✏️ Modify version
         run: |
-          yq -i '${{ inputs.yaml-version-path }} = "${{ inputs.version }}"' 'targeted-repository/${{ inputs.yaml-filepath }}/${{ inputs.isChart == 'true' && 'Chart.yaml' || 'values.yaml' }}
+          yq -i '${{ inputs.yaml-version-path }} = "${{ inputs.version }}"' 'targeted-repository/${{ inputs.yaml-filepath }}/${{ inputs.is-chart == 'true' && 'Chart.yaml' || 'values.yaml' }}
       - name: ✏️ Update chart
-        if: inputs.isChart == 'true'
+        if: inputs.is-chart == 'true'
         run: |
           helm repo add --username ${{ secrets.username }} --password ${{ secrets.password }} empathy https://${{ inputs.registry-url }}/${{ inputs.project }}
           helm dep update 'targeted-repository/${{ inputs.yaml-filepath }}'

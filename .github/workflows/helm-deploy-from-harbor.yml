@@ -14,7 +14,7 @@ on:
         description: 'Path to the yaml file'
         required: true
         type: string
-      isChart:
+      is-chart:
         description: 'True if deploying a helm chart'
         default: false
         required: false
