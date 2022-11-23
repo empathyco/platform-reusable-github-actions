@@ -53,12 +53,15 @@ jobs:
   reusable_workflow_job:
     runs-on: [ self-hosted, platform ]
     steps:
-      - name: ⚙️ Setup helm
-        uses: azure/setup-helm@v3
+      #- name: ⚙️ Setup yq
+       # uses: frenck/action-setup-yq@v1
+      - name: ⚙️ Setup arkade
+        uses: alexellis/setup-arkade@v2
+      - name: ⚙️ Install tools
+        uses: alexellis/arkade-get@master
         with:
-          version: v3.10.1
-      - name: ⚙️ Setup yq
-        uses: frenck/action-setup-yq@v1
+          helm: latest
+          yq: latest
       - name: ⬇️ Checkout targeted repository
         uses: actions/checkout@v3
         with:
