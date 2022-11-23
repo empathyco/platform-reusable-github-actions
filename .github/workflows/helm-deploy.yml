@@ -14,10 +14,6 @@ on:
         description: 'Path to the yaml file'
         required: true
         type: string
-      yaml-filename:
-        description: 'Yaml filename'
-        required: true
-        type: string
       yaml-version-path:
         description: 'Yaml path where the version property is set'
         required: true
@@ -70,14 +66,14 @@ jobs:
           path: 'targeted-repository'
       - name: ✏️ Modify version
         run: |
-          yq -i '${{ input.yaml-version-path }} = "${{ input.version }}"' 'targeted-repository/${{ input.yaml-filepath }}/${{ input.yaml-filename }}'
+          yq -i '${{ input.yaml-version-path }} = "${{ input.version }}"' 'targeted-repository/${{ input.yaml-filepath }}'
       - name: ✏️ Update chart
         run: |
           helm repo add -u ${{ secrets.username }} -p ${{ secrets.password }} empathy https://${{ input.registry-url }}/${{ input.project }}
-          helm dep update 'targeted-repository/${{ input.yaml-file }}'
+          helm dep update 'targeted-repository/${{ input.yaml-filepath }}'
       - name: ⬆️ Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
-          commit_message: 'Update ${{ input.yaml-filepath }}/${{ input.yaml-filename }} to version ${{ input.version }}'
+          commit_message: 'Update ${{ input.yaml-filepath }} to version ${{ input.version }}'
           branch: main
           repository: 'targeted-repository'
