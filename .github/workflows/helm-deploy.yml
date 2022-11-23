@@ -66,7 +66,7 @@ jobs:
           yq -i '${{ inputs.yaml-version-path }} = "${{ inputs.version }}"' 'targeted-repository/${{ inputs.yaml-filepath }}'
       - name: ✏️ Update chart
         run: |
-          helm repo add -u ${{ secrets.username }} -p ${{ secrets.password }} empathy https://${{ inputs.registry-url }}/${{ inputs.project }}
+          helm repo add --username ${{ secrets.username }} --password ${{ secrets.password }} empathy https://${{ inputs.registry-url }}/${{ inputs.project }}
           helm dep update 'targeted-repository/${{ inputs.yaml-filepath }}'
       - name: ⬆️ Commit changes
         uses: stefanzweifel/git-auto-commit-action@v4
