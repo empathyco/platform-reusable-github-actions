@@ -59,7 +59,7 @@ jobs:
         with:
           repository: ${{ inputs.repository }}
           ref: ${{ inputs.branch }}
-          token: ${{ secrets.SUPPORT_TOKEN }}
+          token: ${{ secrets.repository-token }}
           path: 'targeted-repository'
       - name: ✏️ Modify version
         run: |
