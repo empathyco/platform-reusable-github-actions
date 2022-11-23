@@ -13,21 +13,20 @@ on:
         description: 'Artifact version'
         required: true
         type: string
-      folder:
-        description: 'Project folder'
-        default: './'
-        required: false
+      image-artifact:
+        description: 'Image github artifact'
+        required: true
         type: string
 
 jobs:
-  reusable_workflow_job:
-    uses:
+  docker-publish-harbor:
+    uses: empathyco/platform-reusable-github-actions/.github/workflows/docker-publish.yml@main
     with:
       registry-url: 'harbor.internal.shared.empathy.co/'
-      project: ${{ input.project }}
-      artifact: ${{ input.artifact }}
-      artifact-version: ${{ input.artifact-version }}
-      folder: ${{ input.folder }}
+      project: ${{ inputs.project }}
+      artifact: ${{ inputs.artifact }}
+      artifact-version: ${{ inputs.artifact-version }}
+      image-artifact: ${{ inputs.image-artifact }}
     secrets:
       username: ${{ secrets.HARBOR_USERNAME }}
       password: ${{ secrets.HARBOR_TOKEN }}

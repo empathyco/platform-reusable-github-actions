@@ -17,25 +17,26 @@ on:
         description: 'Artifact version'
         required: true
         type: string
-      folder:
-        description: 'Dockerimage folder'
-        default: './'
-        required: false
+      image-artifact:
+        description: 'Image github artifact'
+        required: true
         type: string
     secrets:
       username:
         description: 'Registry username'
         required: true
-        type: string
       password:
         description: 'Registry password'
         required: true
-        type: string
 
 jobs:
-  reusable_workflow_job:
+  docker-publish:
     runs-on: [ self-hosted, platform ]
     steps:
+      - uses: actions/download-artifact@v3
+        with:
+          name: ${{ image-artifact }}
+          path: .
       - name: ⚙️ Set up Docker Context for Buildx
         run: |
           docker context create builders
@@ -46,13 +47,12 @@ jobs:
       - name: ⬇️ Login to Docker Hub
         uses: docker/login-action@v2
         with:
-          registry: https://${{ input.registry-url }}
+          registry: https://${{ inputs.registry-url }}
           username: ${{ secrets.username }}
           password: ${{ secrets.password }}
       - name: ✏️ ⬆️ Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ${{ input.folder }}
-          file: ${{ input.folder }}/Dockerfile
+          context: .
           push: true
-          tags: ${{ input.registry-url }}/${{ input.project }}/${{ input.artifact }}:${{ input.artifact-version }}
+          tags: ${{ inputs.registry-url }}/${{ inputs.project }}/${{ inputs.artifact }}:${{ inputs.artifact-version }}
