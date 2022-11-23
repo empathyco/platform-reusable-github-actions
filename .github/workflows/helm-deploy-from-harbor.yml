@@ -33,7 +33,7 @@ on:
         type: string
 
 jobs:
-  reusable_workflow_job:
+  helm-deploy-from-harbor:
     uses: empathyco/platform-reusable-github-actions/.github/workflows/helm-deploy.yml@main
     with:
       registry-url: 'harbor.internal.shared.empathy.co/'

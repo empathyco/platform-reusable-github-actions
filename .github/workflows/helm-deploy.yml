@@ -47,7 +47,7 @@ on:
 
 
 jobs:
-  reusable_workflow_job:
+  helm-deploy:
     runs-on: [ self-hosted, platform ]
     steps:
       #- name: ⚙️ Setup yq
