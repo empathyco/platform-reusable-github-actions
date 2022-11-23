@@ -22,11 +22,9 @@ on:
       username:
         description: 'Registry username'
         required: true
-        type: string
       password:
         description: 'Registry password'
         required: true
-        type: string
 
 jobs:
   helm-publish:
