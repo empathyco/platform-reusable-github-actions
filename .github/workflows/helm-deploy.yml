@@ -68,7 +68,7 @@ jobs:
           path: 'targeted-repository'
       - name: ✏️ Modify version
         run: |
-          yq -i '${{ inputs.yaml-version-path }} = "${{ inputs.version }}"' 'targeted-repository/${{ inputs.yaml-filepath }}/${{ inputs.is-chart == 'true' && 'Chart.yaml' || 'values.yaml' }}
+          yq -i '${{ inputs.yaml-version-path }} = "${{ inputs.version }}"' 'targeted-repository/${{ inputs.yaml-filepath }}/${{ inputs.is-chart == 'true' && 'Chart.yaml' || 'values.yaml' }}'
       - name: ✏️ Update chart
         if: inputs.is-chart == 'true'
         run: |
