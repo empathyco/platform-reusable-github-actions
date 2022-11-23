@@ -39,6 +39,7 @@ jobs:
       registry-url: 'harbor.internal.shared.empathy.co/'
       repository: ${{ inputs.repository }}
       branch: ${{ inputs.branch }}
+      is-chart: ${{ inputs.is-chart }}
       yaml-filepath: ${{ inputs.yaml-filepath }}
       yaml-version-path: ${{ inputs.yaml-version-path }}
       version: ${{ inputs.version }}
