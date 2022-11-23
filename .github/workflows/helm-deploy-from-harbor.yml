@@ -37,7 +37,7 @@ jobs:
       yaml-filepath: ${{ inputs.yaml-filepath }}
       yaml-version-path: ${{ inputs.yaml-version-path }}
       version: ${{ inputs.version }}
-      project: ${{ input.project }}
+      project: ${{ inputs.project }}
     secrets:
       repository-token: ${{ secrets.SUPPORT_TOKEN }}
       username: ${{ secrets.HARBOR_USERNAME }}
