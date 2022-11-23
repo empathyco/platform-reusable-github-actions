@@ -14,9 +14,9 @@ on:
         required: true
         type: string
 
+
 jobs:
   helm-publish-harbor:
-    runs-on: [ self-hosted, platform ]
     uses: empathyco/platform-reusable-github-actions/.github/workflows/helm-publish.yml@main
     with:
       registry-url: 'harbor.internal.shared.empathy.co/'
