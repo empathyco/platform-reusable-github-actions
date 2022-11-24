@@ -21,7 +21,7 @@ on:
         required: false
         type: string
       image-folder:
-        description: 'Folder including all the staff needed to build the image'
+        description: 'Folder including all the stuff needed to build the image'
         default: 'image'
         required: false
         type: string
