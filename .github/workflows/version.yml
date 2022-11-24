@@ -9,7 +9,7 @@ on:
     outputs:
       version:
         description: 'Version obtained from tag'
-        value: 'jobs.version.outputs.version'
+        value: ${{ jobs.version.outputs.version }}
 
 jobs:
   version:
