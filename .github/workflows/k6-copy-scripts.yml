@@ -15,7 +15,6 @@ jobs:
       with:
         kubectl: latest
     - name: Set kubeconfig shared cluster
-      if: steps.filter.outputs.folder == 'true'
       run: |
         kubectl apply -f pod.yaml -n k6
         sleep 20
