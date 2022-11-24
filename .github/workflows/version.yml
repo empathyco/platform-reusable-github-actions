@@ -1,0 +1,27 @@
+on:
+  workflow_call:
+    inputs:
+      version-prefix:
+        description: 'Prefix of version'
+        default: ''
+        required: false
+        type: string
+    outputs:
+      version:
+        description: 'Version obtained from tag'
+        value: 'jobs.version.outputs.version'
+
+jobs:
+  version:
+    runs-on: [ self-hosted, platform ]
+    outputs:
+      version: ${{ steps.version-step.outputs.version }}
+    steps:
+      - name: ⬇️Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: ✏️➡️ Set Version
+        id: version-step
+        run: |
+          echo version=$(git describe --tags --always --match ${{ inputs.version-prefix }}'*' | sed "s/^\(${{ inputs.version-prefix }}\)//") >> $GITHUB_OUTPUT
