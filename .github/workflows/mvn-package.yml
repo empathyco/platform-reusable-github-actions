@@ -34,8 +34,7 @@ on:
         default: ${{ github.action_ref }}
         required: false
         type: string
-    outputs:
-      image
+
 jobs:
   build:
     runs-on: [ self-hosted, platform ]
