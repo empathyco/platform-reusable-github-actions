@@ -19,7 +19,8 @@ on:
         type: string
       image-artifact:
         description: 'Image github artifact'
-        required: true
+        default: ${{ GITHUB_ACTION }}
+        required: false
         type: string
     secrets:
       username:
