@@ -1,0 +1,58 @@
+on:
+  workflow_call:
+    inputs:
+      jar-name:
+        description: 'jar name that will be produced'
+        required: true
+        type: string
+      path:
+        description: 'Root path of service'
+        default: '.'
+        required: false
+        type: string
+      java-version:
+        description: 'Version of Java to compile'
+        default: '17'
+        required: false
+        type: string
+      java-distribution:
+        description: 'Distribution of the jre'
+        default: 'temurin'
+        required: false
+        type: string
+      image-folder:
+        description: 'Folder including all the staff needed to build the image'
+        default: 'image'
+        required: false
+        type: string
+      image-artifact:
+        description: 'jar name that will be produced'
+        default: 'GITHUB_ACTION'
+        required: false
+        type: string
+
+jobs:
+  build:
+    runs-on: [ self-hosted, platform ]
+    steps:
+      - name: ⬇️Checkout
+        uses: actions/checkout@v3
+      - name: ⚙️Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: ${{ inputs.java-version }}
+          distribution: ${{ inputs.java-distribution }}
+      - name: ✏️Unit testing
+        run: |
+          ${{ inputs.path }}/mvnw -f ${{ inputs.path }} test
+      - name: ✏️Build package
+        run: |
+          ${{ inputs.path }}/mvnw -f ${{ inputs.path }} clean package -DskipTests
+      - name: ✏️Prepare image resources
+        run: |
+          mv ${{ inputs.path }}/target/${{ inputs.jar-name }}.jar ${{ inputs.path }}/${{ inputs.image-folder }}
+      - name: ⬆️Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ inputs.image-artifact }}
+          path: ${{ inputs.path }}/${{ inputs.image-folder }}
