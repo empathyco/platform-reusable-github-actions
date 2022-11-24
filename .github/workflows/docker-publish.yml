@@ -19,7 +19,7 @@ on:
         type: string
       image-artifact:
         description: 'Image github artifact'
-        default: ${{ GITHUB_ACTION }}
+        default: ${{ name }}
         required: false
         type: string
     secrets:
