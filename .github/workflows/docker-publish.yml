@@ -17,11 +17,6 @@ on:
         description: 'Artifact version'
         required: true
         type: string
-      image-artifact:
-        description: 'Image github artifact'
-        default: ${{ github.action_ref }}
-        required: false
-        type: string
     secrets:
       username:
         description: 'Registry username'
@@ -36,7 +31,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v3
         with:
-          name: ${{ inputs.image-artifact }}
+          name: ${{ inputs.artifact }}-${{ inputs.version }}
           path: .
       - name: ⚙️ Set up Docker Context for Buildx
         run: |

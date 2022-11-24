@@ -1,8 +1,12 @@
 on:
   workflow_call:
     inputs:
-      jar-name:
+      artifact:
         description: 'jar name that will be produced'
+        required: true
+        type: string
+      version:
+        description: 'Version being built'
         required: true
         type: string
       path:
@@ -30,7 +34,8 @@ on:
         default: ${{ github.action_ref }}
         required: false
         type: string
-
+    outputs:
+      image
 jobs:
   build:
     runs-on: [ self-hosted, platform ]
@@ -50,9 +55,9 @@ jobs:
           ${{ inputs.path }}/mvnw -f ${{ inputs.path }} clean package -DskipTests
       - name: ✏️Prepare image resources
         run: |
-          mv ${{ inputs.path }}/target/${{ inputs.jar-name }}.jar ${{ inputs.path }}/${{ inputs.image-folder }}
+          mv ${{ inputs.path }}/target/${{ inputs.artifact }}.jar ${{ inputs.path }}/${{ inputs.image-folder }}
       - name: ⬆️Upload artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.image-artifact }}
+          name: ${{ inputs.artifact }}-${{ inputs.version }}
           path: ${{ inputs.path }}/${{ inputs.image-folder }}
