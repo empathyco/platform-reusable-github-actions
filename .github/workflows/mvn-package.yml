@@ -27,7 +27,7 @@ on:
         type: string
       image-artifact:
         description: 'jar name that will be produced'
-        default: ${{ name }}
+        default: ${{ github.action }}
         required: false
         type: string
 
