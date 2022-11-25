@@ -69,6 +69,7 @@ jobs:
           fi
         done
         count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
+        echo $count
         if [ ${count} -gt 0 ]; then
           echo "Ran Diff for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
           echo "<details><summary>Show Output</summary>" >> diff.txt
