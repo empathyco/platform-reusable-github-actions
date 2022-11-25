@@ -59,6 +59,7 @@ jobs:
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - -n ${{ inputs.namespace }} 2>&1 >> diff || true
         awk 'BEGIN {a=0}/diff/{filename="diff-"a".txt"; a++}; {print >filename}' diff
         count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
+        echo $count
         for ((i=0; i<$count; i++)); do
           check_argo_annotation=$(grep -E "^- +argocd.argoproj\.io\/instance\:" diff-$i.txt)
           if [ $? -eq 0 ]; then
