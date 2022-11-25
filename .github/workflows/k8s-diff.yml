@@ -68,17 +68,24 @@ jobs:
             fi
           fi
         done
-        echo "Ran Diff for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
-        echo "<details><summary>Show Output</summary>" >> diff.txt
-        echo "" >> diff.txt
-        echo "\`\`\`diff" >> diff.txt
-        cat diff* >> diff.txt
-        echo "\`\`\`" >> diff.txt
-        echo "</details>" >> diff.txt
-        echo "" >> diff.txt
-        echo "---" >> diff.txt
-        echo "" >> diff.txt
-        echo "<h1>:warning: <strong>Review this comment before merge!</strong> :warning:</h1>" >> diff.txt
+        count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
+        if [ ${count} -gt 0 ]; then
+          echo "Ran Diff for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
+          echo "<details><summary>Show Output</summary>" >> diff.txt
+          echo "" >> diff.txt
+          echo "\`\`\`diff" >> diff.txt
+          cat diff-* >> diff.txt
+          echo "\`\`\`" >> diff.txt
+          echo "</details>" >> diff.txt
+          echo "" >> diff.txt
+          echo "---" >> diff.txt
+          echo "" >> diff.txt
+          echo "<h1>:warning: <strong>Review this comment before merge!</strong> :warning:</h1>" >> diff.txt
+          exit 1
+        else 
+          echo "No diff found for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
+        fi
+
     - uses: actions/github-script@v6
       if: steps.filter.outputs.folder == 'true'
       with:
