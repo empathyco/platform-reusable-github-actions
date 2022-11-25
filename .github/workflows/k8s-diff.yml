@@ -59,18 +59,16 @@ jobs:
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - -n ${{ inputs.namespace }} 2>&1 >> diff || true
         awk 'BEGIN {a=0}/diff/{filename="diff-"a".txt"; a++}; {print >filename}' diff
         count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
-        echo $count
         for ((i=0; i<$count; i++)); do
           check_argo_annotation=$(grep -E "^- +argocd.argoproj\.io\/instance\:" diff-$i.txt)
           if [ $? -eq 0 ]; then
             diff_count=$(grep -E "^- +" diff-$i.txt | wc -l | awk '{print $1}')
-            if [ ${diff_count} -gt 1 ]; then
+            if [ ${diff_count} -eq 1 ]; then
               rm diff-$i.txt
             fi
           fi
         done
         count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
-        echo $count
         if [ ${count} -gt 0 ]; then
           echo "Ran Diff for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
           echo "<details><summary>Show Output</summary>" >> diff.txt
@@ -83,7 +81,6 @@ jobs:
           echo "---" >> diff.txt
           echo "" >> diff.txt
           echo "<h1>:warning: <strong>Review this comment before merge!</strong> :warning:</h1>" >> diff.txt
-          exit 1
         else 
           echo "No diff found for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
         fi
