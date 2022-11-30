@@ -47,7 +47,12 @@ jobs:
     - name: Helm chart diff
       run: |
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} -n ${{ inputs.namespace }} | kubectl diff --show-managed-fields=false -f - -n ${{ inputs.namespace }} 2>&1 >> diff-raw || true
-        awk '/^- +labels\:$/ {n=NR+1;next}NR=n && /argocd\.argoproj\.io\/instance:/ {next}/argocd\.argoproj\.io\/instance:/ {next}{print}' diff-raw > diff
+        awk '
+          /^- +labels\:$/ {nextLine=NR+1;next}
+          NR=nextLine && /argocd\.argoproj\.io\/instance:/ {next}
+          /argocd\.argoproj\.io\/instance:/ {next}
+          {print}
+        ' diff-raw > diff
         awk 'BEGIN {a=0}/diff/{filename="diff-"a".txt"; a++}; {print >filename}' diff
         for i in $(ls -1 diff-*.txt); do
           changes=$(grep -cE "^[\-\+] +" diff-$i.txt)
