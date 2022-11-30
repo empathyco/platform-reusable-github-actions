@@ -50,7 +50,7 @@ jobs:
         awk 'BEGIN {a=0}/diff/{filename="diff-"a".txt"; a++}; {print >filename}' diff
         count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
         for ((i=0; i<$count; i++)); do
-          check_argo_annotation=$(grep -E "^- +argocd.argoproj\.io\/instance\:" diff-$i.txt)
+          check_argo_annotation=$(grep -czE "(^- +labels: )?\- +argocd\.argoproj\.io\/instance:.*" diff-$i.txt)
           if [ $? -eq 0 ]; then
             diff_count=$(grep -E "^- +" diff-$i.txt | wc -l | awk '{print $1}')
             if [ ${diff_count} -eq 1 ]; then
