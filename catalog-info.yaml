@@ -12,5 +12,5 @@ metadata:
     backstage.io/edit-url: https://github.com/empathyco/platform-reusable-github-actions/edit/main/catalog-info.yaml
 spec:
   type: library
-  lifecycle: unknown
+  lifecycle: production
   owner: platform-engineering

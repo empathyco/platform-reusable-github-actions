@@ -1,0 +1,15 @@
+site_name: "Reusable github actions documentation"
+repo_url: https://github.com/empathyco/platform-backstage
+edit_uri: edit/main/docs/
+
+plugins:
+  - techdocs-core
+  - search
+
+markdown_extensions:
+  - admonition
+
+nav:
+  - Home: index.md
+  - Promtool: promtool.md
+  - Promtool-workloads: promtool-workloads.md
