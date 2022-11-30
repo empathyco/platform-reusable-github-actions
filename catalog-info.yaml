@@ -1,10 +1,16 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
+  tags:
+    - actions
+    - platform
+  description: Reusable github actions
   name: platform-reusable-github-actions
   annotations:
     github.com/project-slug: empathyco/platform-reusable-github-actions
+    backstage.io/techdocs-ref: dir:.
+    backstage.io/edit-url: https://github.com/empathyco/platform-reusable-github-actions/edit/main/catalog-info.yaml
 spec:
-  type: other
+  type: library
   lifecycle: unknown
   owner: platform-engineering
