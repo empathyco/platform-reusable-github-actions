@@ -23,38 +23,28 @@ on:
       KUBECONFIG:
         required: false
 jobs:
-  reusable_workflow_job:
+  k8s-diff:
     runs-on: [self-hosted, platform]
     steps:
     - uses: actions/checkout@v3
-    - uses: dorny/paths-filter@v2
-      id: filter
-      with:
-        filters: |
-          folder:
-            - '${{ inputs.folder }}/${{ inputs.release-name }}/**'
-        token: ${{ secrets.SUPPORT_TOKEN }}
     - uses: alexellis/setup-arkade@v2
-      if: steps.filter.outputs.folder == 'true'
     - uses: alexellis/arkade-get@master
-      if: steps.filter.outputs.folder == 'true'
       with:
         kubectl: v1.25.3
         helm: latest
     - name: Set kubeconfig shared cluster
-      if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'shared'
+      if: inputs.cluster == 'shared'
       run: |
         mkdir -p ~/.kube
         echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
         kubectl config --kubeconfig=$HOME/.kube/config use-context shared-services
     - name: Set kubeconfig test cluster
-      if: steps.filter.outputs.folder == 'true' && inputs.cluster == 'test'
+      if: inputs.cluster == 'test'
       run: |
         mkdir -p ~/.kube
         echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
         kubectl config --kubeconfig=$HOME/.kube/config use-context test
     - name: Helm chart diff
-      if: steps.filter.outputs.folder == 'true'
       run: |
         helm template ${{ inputs.release-name }} ./${{ inputs.folder }}/${{ inputs.release-name }} | kubectl diff --show-managed-fields=false -f - -n ${{ inputs.namespace }} 2>&1 >> diff || true
         awk 'BEGIN {a=0}/diff/{filename="diff-"a".txt"; a++}; {print >filename}' diff
@@ -86,7 +76,6 @@ jobs:
         fi
 
     - uses: actions/github-script@v6
-      if: steps.filter.outputs.folder == 'true'
       with:
         github-token: ${{ secrets.GH_TOKEN }}
         script: |
