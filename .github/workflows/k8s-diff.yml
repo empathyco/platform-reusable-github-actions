@@ -51,12 +51,9 @@ jobs:
         awk '/^- +labels\:$/ {n=NR+1;next}NR=n && /argocd\.argoproj\.io\/instance:/ {next}/argocd\.argoproj\.io\/instance:/ {next}{print}' diff-raw > diff
         awk 'BEGIN {a=0}/diff/{filename="diff-"a".txt"; a++}; {print >filename}' diff
         for i in $(ls -1 diff-*.txt); do
-          echo $i
-          changes=$(grep -cE "^[\-\+] +" $i || true)
-          if [ $? -eq 0 ]; then
+          changes=$(grep -cE "^[\-\+] +" $i)
+          if [ $changes -eq 0 ]; then
             rm $i
-          else
-            true
           fi
         done
         count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
