@@ -5,7 +5,7 @@ metadata:
     - actions
     - platform
   description: Reusable github actions
-  name: platform-reusable-github-actions
+  name: reusable-github-actions
   annotations:
     github.com/project-slug: empathyco/platform-reusable-github-actions
     backstage.io/techdocs-ref: dir:.
