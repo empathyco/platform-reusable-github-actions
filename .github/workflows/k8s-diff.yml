@@ -53,7 +53,7 @@ jobs:
         for i in $(ls -1 diff-*.txt); do
           changes=$(grep -cE "^[\-\+] +" $i)
           if [ $? -eq 0 ]; then
-            rm diff-$i.txt
+            rm $i
           fi
         done
         count=$(ls -1 diff-*.txt 2>/dev/null | wc -l | awk '{print $1}')
