@@ -32,18 +32,11 @@ jobs:
       with:
         kubectl: v1.25.3
         helm: latest
-    - name: Set kubeconfig shared cluster
-      if: inputs.cluster == 'shared'
+    - name: Set kubeconfig
       run: |
         mkdir -p ~/.kube
         echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
-        kubectl config --kubeconfig=$HOME/.kube/config use-context shared-services
-    - name: Set kubeconfig test cluster
-      if: inputs.cluster == 'test'
-      run: |
-        mkdir -p ~/.kube
-        echo ${{ secrets.KUBECONFIG }} | base64 -d > $HOME/.kube/config
-        kubectl config --kubeconfig=$HOME/.kube/config use-context test
+        kubectl config --kubeconfig=$HOME/.kube/config use-context ${{ inputs.cluster }}
     - name: Helm chart diff
       run: |
         kubectl config set-context --current --namespace ${{ inputs.namespace }}
