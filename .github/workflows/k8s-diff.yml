@@ -65,7 +65,7 @@ jobs:
           echo "<details><summary>Show Output</summary>" >> diff.txt
           echo "" >> diff.txt
           echo "\`\`\`diff" >> diff.txt
-          cat diff-* >> diff.txt
+          cat diff-*.txt >> diff.txt
           echo "\`\`\`" >> diff.txt
           echo "</details>" >> diff.txt
           echo "" >> diff.txt
