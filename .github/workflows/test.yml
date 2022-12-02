@@ -3,7 +3,6 @@ on:
     inputs:
       executor:
         description: 'Executor for runs-on'
-        required: true
         type: string
         default: platform
 jobs:
