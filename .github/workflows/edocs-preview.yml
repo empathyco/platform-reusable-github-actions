@@ -2,6 +2,10 @@ name: eDocs preview for Empathy teams
 on:
   workflow_call:
     inputs:
+      runner:
+        description: 'Runner for runs-on'
+        default: platform
+        type: string
       teamRepo:
         description: 'Team to sync with eDocs'
         required: true
@@ -19,11 +23,6 @@ on:
         required: false
         default: ''
         type: string
-      publicRepo:
-        description: 'Is the repository public?'
-        required: false
-        default: false
-        type: boolean
     secrets:
       GH_TOKEN:
         required: true
@@ -31,7 +30,7 @@ on:
         required: true
 jobs:
   build:
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ inputs.runner }}
     permissions:
       id-token: write
       contents: read
