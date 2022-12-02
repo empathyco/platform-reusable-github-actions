@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      runner:
+        description: 'Runner for runs-on'
+        type: string
+        default: platform
       node-version:
         description: 'Node.js version'
         required: true
@@ -23,7 +27,7 @@ on:
         type: string
 jobs:
   reusable_workflow_job:
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ inputs.runner }}
     # These permissions are needed to interact with GitHub's OIDC Token endpoint.
     permissions:
       id-token: write

@@ -1,6 +1,10 @@
 on:
   workflow_call:
     inputs:
+      runner:
+        description: 'Runner for runs-on'
+        type: string
+        default: platform
       folder:
         description: 'Helm chart folder'
         required: true
@@ -24,7 +28,7 @@ on:
         required: false
 jobs:
   k8s-diff:
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ inputs.runner }}
     steps:
     - uses: actions/checkout@v3
     - uses: alexellis/setup-arkade@v2
@@ -65,7 +69,6 @@ jobs:
         else 
           echo "No Helm Diff found for chart: \`${{ inputs.folder}}/${{ inputs.release-name}}\` in namespace: \`${{ inputs.namespace }}\`" >> diff.txt
         fi
-
     - uses: actions/github-script@v6
       with:
         github-token: ${{ secrets.GH_TOKEN }}

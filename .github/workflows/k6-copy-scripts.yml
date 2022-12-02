@@ -1,13 +1,17 @@
 on:
   workflow_call:
     inputs:
+      runner:
+        description: 'Runner for runs-on'
+        type: string
+        default: platform
       team:
         description: 'Team folder with the k6 scripts'
         required: true
         type: string
 jobs:
   reusable_workflow_job:
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ inputs.runner }}
     steps:
     - uses: actions/checkout@v3
     - uses: alexellis/setup-arkade@v2

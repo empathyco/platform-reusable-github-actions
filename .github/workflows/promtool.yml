@@ -3,6 +3,10 @@ name: Check Prometheus Alert rules
 on:
   workflow_call:
     inputs:
+      runner:
+        description: 'Runner for runs-on'
+        type: string
+        default: platform
       prometheus-rules:
         description: "Command to generate the prometheus rules"
         required: true
@@ -17,28 +21,24 @@ on:
 jobs:
   promtool:
     name: Promtool
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ inputs.runner }}
     steps:
-      - uses: actions/checkout@v3
-
-      - uses: alexellis/setup-arkade@v1
-
-      - uses: alexellis/arkade-get@master
-        with:
-          helm: v3.10.1
-          yq: v4.28.1
-      
-      - name: Get prometheus rules
-        working-directory: ${{ inputs.working-directory }}
-        run: |
-          helm template . -s ${{ inputs.prometheus-rules }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
-      
-      - name: Check Prometheus alert rules
-        uses: peimanja/promtool-github-actions@master
-        with:
-          promtool_actions_subcommand: "rules"
-          promtool_actions_files: "promtool-rules.yaml"
-          promtool_actions_version: "2.14.0"
-          promtool_actions_comment: true
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - uses: actions/checkout@v3
+    - uses: alexellis/setup-arkade@v1
+    - uses: alexellis/arkade-get@master
+      with:
+        helm: v3.10.1
+        yq: v4.28.1
+    - name: Get prometheus rules
+      working-directory: ${{ inputs.working-directory }}
+      run: |
+        helm template . -s ${{ inputs.prometheus-rules }} | yq .spec > ${GITHUB_WORKSPACE}/promtool-rules.yaml
+    - name: Check Prometheus alert rules
+      uses: peimanja/promtool-github-actions@master
+      with:
+        promtool_actions_subcommand: "rules"
+        promtool_actions_files: "promtool-rules.yaml"
+        promtool_actions_version: "2.14.0"
+        promtool_actions_comment: true
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}

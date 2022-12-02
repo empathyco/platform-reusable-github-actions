@@ -3,6 +3,10 @@ name: Check Prometheus Alert rules
 on:
   workflow_call:
     inputs:
+      runner:
+        description: 'Runner for runs-on'
+        type: string
+        default: platform
       working-directory:
         description: "Charts folder"
         required: true
@@ -14,70 +18,63 @@ on:
 jobs:
   changed-files:
     name: Get changes
-    runs-on: [self-hosted, platform]
+    runs-on: ${{ inputs.runner }}
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          fetch-depth: 0 # needed for tj-actions/changed-files
-      
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v34
-        with:
-          dir_names: "true"
-          json: true
-          files: |
-            applications/**
-      
-      - name: List all changed files
-        run: |
-          echo '${{ steps.changed-files.outputs.all_changed_files }}'
-      - id: set-matrix
-        run: echo "matrix={\"folder-path\":${{ steps.changed-files.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
-
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # needed for tj-actions/changed-files
+    - name: Get changed files
+      id: changed-files
+      uses: tj-actions/changed-files@v34
+      with:
+        dir_names: "true"
+        json: true
+        files: |
+          applications/**
+    - name: List all changed files
+      run: |
+        echo '${{ steps.changed-files.outputs.all_changed_files }}'
+    - id: set-matrix
+      run: echo "matrix={\"folder-path\":${{ steps.changed-files.outputs.all_changed_files }}}" >> "$GITHUB_OUTPUT"
   matrix-job:
     name: Run Matrix Job
-    runs-on: [self-hosted, platform]
-    needs: [changed-files]
+    runs-on: ${{ inputs.runner }}
+    needs: changed-files
     strategy:
       matrix: ${{ fromJSON(needs.changed-files.outputs.matrix) }}
       max-parallel: 4
       fail-fast: false
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - uses: alexellis/setup-arkade@v1
-
-      - uses: alexellis/arkade-get@master
-        with:
-          helm: v3.10.1
-          yq: v4.28.1
-
-      - name: Get prometheus rules
-        working-directory: ${{ matrix.folder-path }}
-        run: |
-          app=`basename ${{ matrix.folder-path }}`
-          echo groups: > ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s templates/prometheus-rule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s templates/prometheus-rules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s templates/prometheusrule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s templates/prometheusrules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s charts/${app}/templates/prometheus-rule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s charts/${app}/templates/prometheus-rules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s charts/${app}/templates/prometheusrule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          helm template . -s charts/${app}/templates/prometheusrules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
-          sed '/null/d' ${GITHUB_WORKSPACE}/rules.yaml > ${GITHUB_WORKSPACE}/promtool-rules.yaml
-
-      - name: Check Prometheus alert rules
-        uses: peimanja/promtool-github-actions@master
-        with:
-          promtool_actions_subcommand: "rules"
-          promtool_actions_files: "promtool-rules.yaml"
-          promtool_actions_version: "2.14.0"
-          promtool_actions_comment: true
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+    - name: Checkout
+      uses: actions/checkout@v3
+    - uses: alexellis/setup-arkade@v1
+    - uses: alexellis/arkade-get@master
+      with:
+        helm: v3.10.1
+        yq: v4.28.1
+    - name: Get prometheus rules
+      working-directory: ${{ matrix.folder-path }}
+      run: |
+        app=`basename ${{ matrix.folder-path }}`
+        echo groups: > ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s templates/prometheus-rule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s templates/prometheus-rules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s templates/prometheusrule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s templates/prometheusrules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s charts/${app}/templates/prometheus-rule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s charts/${app}/templates/prometheus-rules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s charts/${app}/templates/prometheusrule.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        helm template . -s charts/${app}/templates/prometheusrules.yaml | yq .spec.groups >> ${GITHUB_WORKSPACE}/rules.yaml
+        sed '/null/d' ${GITHUB_WORKSPACE}/rules.yaml > ${GITHUB_WORKSPACE}/promtool-rules.yaml
+    - name: Check Prometheus alert rules
+      uses: peimanja/promtool-github-actions@master
+      with:
+        promtool_actions_subcommand: "rules"
+        promtool_actions_files: "promtool-rules.yaml"
+        promtool_actions_version: "2.14.0"
+        promtool_actions_comment: true
+      env:
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
