@@ -3,13 +3,14 @@ repo_url: https://github.com/empathyco/platform-backstage
 edit_uri: edit/main/docs/
 
 plugins:
-  - techdocs-core
-  - search
+- techdocs-core
+- search
 
 markdown_extensions:
-  - admonition
+- admonition
 
 nav:
-  - Home: index.md
-  - Promtool: promtool.md
-  - Promtool-workloads: promtool-workloads.md
+- Home: index.md
+- Promtool: promtool.md
+- Promtool-workloads: promtool-workloads.md
+- K8s-diff: k8s-diff.md
