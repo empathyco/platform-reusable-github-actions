@@ -31,7 +31,7 @@ on:
         required: true
 jobs:
   build:
-    runs-on: ${{ inputs.publicRepo && 'ubuntu-latest' || '[self-hosted, platform]' }}
+    runs-on: [self-hosted, platform]
     permissions:
       id-token: write
       contents: read
