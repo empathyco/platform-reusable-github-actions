@@ -5,10 +5,10 @@ on:
         description: 'Executor for runs-on'
         required: true
         type: string
-        default: [self-hosted, platform]
+        default: platform
 jobs:
   test:
-    runs-on: ${{ inputs.executor }}
+    runs-on: [${{ inputs.executor }}]
     steps:
     - uses: actions/checkout@v3
     - run: echo "Hello, world!"
