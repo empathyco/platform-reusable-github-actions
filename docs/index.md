@@ -11,8 +11,3 @@ You can use the following template to add the documentation of a new reusable wo
 
 ## Additional notes
 ```
-
-## Documentation index
-
-- [Promtool-workloads](./promtool-workloads.md)
-- [Promtool](./promtool.md)

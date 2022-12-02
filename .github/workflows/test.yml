@@ -1,0 +1,12 @@
+on:
+  workflow_call:
+    inputs:
+      folder:
+        description: 'Helm chart folder'
+        required: true
+        type: string
+jobs:
+  test:
+    steps:
+    - uses: actions/checkout@v3
+    - run: echo "Hello, world!"
