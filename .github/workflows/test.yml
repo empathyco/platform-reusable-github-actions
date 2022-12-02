@@ -1,12 +1,14 @@
 on:
   workflow_call:
     inputs:
-      folder:
-        description: 'Helm chart folder'
+      executor:
+        description: 'Executor for runs-on'
         required: true
         type: string
+        default: [self-hosted, platform]
 jobs:
   test:
+    runs-on: ${{ inputs.executor }}
     steps:
     - uses: actions/checkout@v3
     - run: echo "Hello, world!"
