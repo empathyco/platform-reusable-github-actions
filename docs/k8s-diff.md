@@ -11,9 +11,13 @@ Also if you are using ArgoCD, this workflow is removing the "noise" created by A
 ## Input variables
 
 **runner:** The runner used to run the workflow. It is recommended to use a self-hosted runner.
+
 **folder:** Path to the helm chart of the application.
+
 **release-name:** Name of the release of the application.
+
 **cluster:** Name of the cluster where the application is deployed.
+
 **namespace:** Namespace where the application is deployed.
 
 ## Additional notes
