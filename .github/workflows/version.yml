@@ -5,7 +5,7 @@ on:
         description: 'Prefix of version'
         default: ''
         required: false
-        type:
+        type: string
       runner:
         description: 'Runner for runs-on'
         type: string
